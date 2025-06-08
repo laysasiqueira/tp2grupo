@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Contatos - REST</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f172a;
+      margin: 0;
+      padding: 30px;
+      color: #e2e8f0;
+    }
+
+    h1 {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      margin-top: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #1d4ed8;
+    }
+
+    .botoes {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    li {
+      background-color: #1e293b;
+      padding: 14px 20px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    li span {
+      flex-grow: 1;
+    }
+
+    form {
+      background-color: #1e293b;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+
+    input {
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      font-size: 14px;
+      background-color: #0f172a;
+      color: #e2e8f0;
+    }
+
+    input:focus {
+      border-color: #3b82f6;
+      outline: none;
+    }
+
+    .delete-btn {
+      background-color: #ef4444;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .delete-btn:hover {
+      background-color: #dc2626;
+    }
+  </style>
+</head>
+<body>
+  <div id="notificacao" style="display: none; position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+background-color: #22c55e; color: white; padding: 14px 20px; border-radius: 8px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.3); z-index: 1000; font-weight: bold;"></div>
+
+  <h1>Contatos (REST)</h1>
+
+  <div class="botoes">
+    <button onclick="carregarContatos()">🔄 Carregar Contatos</button>
+  </div>
+
+  <ul id="lista"></ul>
+
+  <h2>Adicionar Novo Contato</h2>
+  <form id="formularioContato" onsubmit="adicionarContato(event)">
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="text" id="telefone" placeholder="Telefone" required>
+    <button type="submit">➕ Adicionar</button>
+  </form>
+
+  <script>
+   async function carregarContatos() {
+  const token = localStorage.getItem('token');
+  const resposta = await fetch('/rest/contatos', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (resposta.status === 403) {
+    alert('🚫 Acesso negado. Faça login novamente.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const contatos = await resposta.json();
+  const lista = document.getElementById('lista');
+  lista.innerHTML = '';
+
+  contatos.forEach(c => {
+    const item = document.createElement('li');
+    const span = document.createElement('span');
+    span.textContent = `${c.nome} (${c.email}) - ${c.telefone}`;
+    item.appendChild(span);
+
+    const botaoApagar = document.createElement('button');
+    botaoApagar.textContent = '🗑️ Apagar';
+    botaoApagar.className = 'delete-btn';
+    botaoApagar.onclick = () => apagarContato(c.id);
+
+    item.appendChild(botaoApagar);
+    lista.appendChild(item);
+  });
+}
+
+async function adicionarContato(event) {
+  event.preventDefault();
+  const token = localStorage.getItem('token');
+
+  const nome = document.getElementById('nome').value;
+  const email = document.getElementById('email').value;
+  const telefone = document.getElementById('telefone').value;
+  const novoContato = { nome, email, telefone };
+
+  const resposta = await fetch('/rest/contatos', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(novoContato)
+  });
+
+  if (resposta.ok) {
+    alert('✅ Contato adicionado com sucesso!');
+    document.getElementById('formularioContato').reset();
+    carregarContatos();
+  } else {
+    alert('❌ Contato não adicionado');
+  }
+}
+
+async function apagarContato(id) {
+  const token = localStorage.getItem('token');
+  if (confirm('❓ Deseja realmente apagar este contato?')) {
+    const resposta = await fetch(`/rest/contatos/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (resposta.ok) {
+      alert('✅ Contato apagado com sucesso!');
+      carregarContatos();
+    } else {
+      alert('❌ Contato não deletado');
+    }
+  }
+}
+  
+
+    const ws = new WebSocket("ws://192.168.246.62:5005"); 
+
+    ws.onopen = () => {
+      console.log('✅ WebSocket conectado com sucesso');
+    };
+
+    ws.onerror = (error) => {
+      console.error('❌ Erro no WebSocket:', error);
+    };
+
+    ws.onclose = () => {
+      console.warn('⚠️ WebSocket foi fechado');
+    };
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      const texto = `🛎️ Evento: ${msg.evento} (${msg.usuario.role}) - ${msg.dados.nome || msg.dados.id}`;
+      const div = document.createElement('div');
+      div.textContent = texto;
+      div.style.background = '#10b981';
+      div.style.padding = '10px';
+      div.style.margin = '15px auto';
+      div.style.maxWidth = '500px';
+      div.style.textAlign = 'center';
+      div.style.borderRadius = '8px';
+      div.style.boxShadow = '0 2px 5px rgba(0,0,0,0.3)';
+      document.body.prepend(div);
+
+      setTimeout(() => div.remove(), 50000); 
+
+    };
+
+  </script>
+</body>
+</html>

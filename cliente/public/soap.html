@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Contatos - SOAP</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #020910;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+
+    h1 {
+      text-align: center;
+      color: #278670;
+      margin-bottom: 30px;
+    }
+
+    .botoes {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    button {
+      background-color: #176b58;
+      border: none;
+      color: rgb(0, 0, 0);
+      padding: 12px 20px;
+      margin: 0 10px 10px 0;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    li {
+      background: white;
+      margin-bottom: 10px;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    li:hover {
+      transform: scale(1.02);
+    }
+
+    .importacao {
+      text-align: center;
+      margin-top: 40px;
+      color: white;
+    }
+
+    /* Novo estilo para input de ficheiro */
+    .custom-file-upload {
+      display: inline-block;
+      padding: 10px 20px;
+      cursor: pointer;
+      background-color: #34495e;
+      color: white;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      transition: background 0.3s;
+    }
+
+    .custom-file-upload:hover {
+      background-color: #2c3e50;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .file-name {
+      color: #ccc;
+      font-size: 14px;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Contatos (SOAP)</h1>
+
+  <div class="botoes">
+    <button onclick="carregarContatos()">🔄 Carregar Contatos</button>
+    <button onclick="exportarJSON()">📥 Exportar JSON</button>
+    <button onclick="exportarXML()">📥 Exportar XML</button>
+  </div>
+
+  <ul id="lista"></ul>
+
+  <div class="importacao">
+    <h2>Importar Contatos</h2>
+
+    <div>
+      <label class="custom-file-upload">
+        📤 Selecionar JSON
+        <input type="file" id="jsonFile" accept=".json" onchange="mostrarNomeFicheiro('jsonFile', 'nomeJson')">
+      </label>
+      <span id="nomeJson" class="file-name">Nenhum ficheiro selecionado</span><br>
+      <button onclick="importarJSON()">Importar JSON</button>
+    </div>
+
+    <div>
+      <label class="custom-file-upload">
+        📤 Selecionar XML
+        <input type="file" id="xmlFile" accept=".xml" onchange="mostrarNomeFicheiro('xmlFile', 'nomeXml')">
+      </label>
+      <span id="nomeXml" class="file-name">Nenhum ficheiro selecionado</span><br>
+      <button onclick="importarXML()">Importar XML</button>
+    </div>
+  </div>
+
+  <script>
+    async function carregarContatos() {
+      const resposta = await fetch('/soap/contatos');
+      const contatos = await resposta.json();
+
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      contatos.forEach(c => {
+        const item = document.createElement('li');
+        item.textContent = `${c.nome} (${c.email}) - ${c.telefone}`;
+        lista.appendChild(item);
+      });
+    }
+
+    function exportarJSON() {
+      window.open('/soap/exportar/json', '_blank');
+    }
+
+    function exportarXML() {
+      window.open('/soap/exportar/xml', '_blank');
+    }
+
+    async function importarJSON() {
+      const ficheiro = document.getElementById('jsonFile').files[0];
+      if (!ficheiro) return alert('Escolhe um ficheiro JSON primeiro!');
+
+      const leitor = new FileReader();
+      leitor.onload = async () => {
+        const base64 = btoa(leitor.result);
+        const token = localStorage.getItem('token');
+
+        const resposta = await fetch('/soap/importar/json', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain',
+            'Authorization': `Bearer ${token}`
+          },
+          body: base64
+        });
+
+        const resultado = await resposta.json();
+        alert(resultado.mensagem || '✅ Importado com sucesso!');
+        carregarContatos();
+      };
+      leitor.readAsBinaryString(ficheiro);
+      console.log("Token usado:", token);
+
+    }
+
+    async function importarXML() {
+      const ficheiro = document.getElementById('xmlFile').files[0];
+      if (!ficheiro) return alert('Escolhe um ficheiro XML primeiro!');
+
+      const leitor = new FileReader();
+      leitor.onload = async () => {
+        const base64 = btoa(leitor.result);
+        const token = localStorage.getItem('token');
+
+        const resposta = await fetch('/soap/importar/xml', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'text/plain',
+            'Authorization': `Bearer ${token}`
+          },
+          body: base64
+        });
+
+        const resultado = await resposta.json();
+        alert(resultado.mensagem || '✅ Importado com sucesso!');
+        carregarContatos();
+      };
+      leitor.readAsBinaryString(ficheiro);
+      console.log("Token usado:", token);
+
+    }
+
+    function mostrarNomeFicheiro(inputId, spanId) {
+      const ficheiro = document.getElementById(inputId).files[0];
+      const nome = ficheiro ? ficheiro.name : 'Nenhum ficheiro selecionado';
+      document.getElementById(spanId).textContent = nome;
+    }
+
+
+  </script>
+</body>
+</html>

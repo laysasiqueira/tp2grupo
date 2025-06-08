@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package agenda;
+
+message Contato {
+  string id = 1;
+  string nome = 2;
+  string email = 3;
+  string telefone = 4;
+}
+
+message StreamContatoRequest {}  // Requisição vazia
+
+service AgendaService {
+  // Serviço de streaming do servidor
+  rpc StreamContatos (StreamContatoRequest) returns (stream Contato);
+}

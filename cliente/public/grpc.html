@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cliente gRPC</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #2ecc71;
+      border: none;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #ecf0f1;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .erro {
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agenda de Contatos - gRPC</h1>
+  <button onclick="listarContatos()">📋 Listar Contatos</button>
+  <ul id="lista"></ul>
+  <p id="mensagem" class="erro"></p>
+
+  <script>
+    async function listarContatos() {
+      const lista = document.getElementById('lista');
+      const msg = document.getElementById('mensagem');
+      lista.innerHTML = '';
+      msg.textContent = '⏳ A buscar contatos...';
+
+      try {
+        const res = await fetch('/grpc/listar');
+        if (!res.ok) throw new Error("Erro na resposta do servidor");
+
+        const data = await res.json();
+        msg.textContent = '';
+
+        if (data.length === 0) {
+          msg.textContent = '❌ Nenhum contato encontrado.';
+          return;
+        }
+
+        data.forEach(contato => {
+          const li = document.createElement('li');
+          li.textContent = `${contato.nome} - ${contato.telefone}`;
+          lista.appendChild(li);
+        });
+      } catch (err) {
+        console.error('Erro ao listar contatos:', err);
+        msg.textContent = '❌ Erro ao listar contatos.';
+      }
+    }
+  </script>
+</body>
+</html>
