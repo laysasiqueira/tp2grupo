@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Teste WebSocket</title>
+</head>
+<body>
+  <h2>Cliente WebSocket</h2>
+
+  <button onclick="enviarREST()">Testar REST</button>
+  <button onclick="enviarGraphQL()">Testar GraphQL</button>
+  <button onclick="enviarSOAP()">Testar SOAP</button>
+  <button onclick="enviarRabbit()">Testar RabbitMQ</button>
+
+  <pre id="resposta">Aguardando conexão com WebSocket...</pre>
+
+  <script>
+    let ws;
+
+    function conectarWebSocket() {
+      ws = new WebSocket("ws://localhost:8765");
+
+      ws.onopen = () => {
+        document.getElementById("resposta").textContent = "WebSocket conectado!";
+      };
+
+      ws.onmessage = (event) => {
+        document.getElementById("resposta").textContent = event.data;
+      };
+
+      ws.onerror = (err) => {
+        document.getElementById("resposta").textContent = "Erro no WebSocket: " + err.message;
+      };
+
+      ws.onclose = () => {
+        document.getElementById("resposta").textContent = "WebSocket desconectado. Recarregue a página.";
+      };
+    }
+
+    function enviar(tipo, payload) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ type: tipo, payload }));
+      } else {
+        alert("WebSocket ainda não está pronto. Aguarde ou recarregue a página.");
+      }
+    }
+
+    function enviarREST() {
+      enviar("rest", {
+        method: "get",
+        endpoint: "usuarios"
+      });
+    }
+
+    function enviarGraphQL() {
+      enviar("graphql", {
+        query: `query { usuario(id: "1") { nome email } }`
+      });
+    }
+
+    function enviarSOAP() {
+      enviar("soap", {
+        method: "getUsuario",
+        args: { id: 1 }
+      });
+    }
+
+    function enviarRabbit() {
+      enviar("rabbit", {
+        queue: "usuarios",
+        message: { nome: "Laysa", acao: "criar" }
+      });
+    }
+
+    conectarWebSocket();
+  </script>
+</body>
+</html>
