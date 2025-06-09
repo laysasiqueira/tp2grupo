@@ -20,8 +20,8 @@ async def handler(websocket, path):
         connected_clients.remove(websocket)
 
 async def main():
-    async with websockets.serve(handler, "0.0.0.0", 8765):
-        print("Servidor WebSocket rodando na porta 8765...")
+    async with websockets.serve(handler, "0.0.0.0", 8768):
+        print("Servidor WebSocket rodando na porta 8768...")
         await asyncio.Future()
 
 if __name__ == "__main__":
