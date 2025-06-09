@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitor de Serviços</title>
+</head>
+<body>
+  <h1>Status dos Serviços</h1>
+  <ul id="status-list"></ul>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8765");
+    const list = document.getElementById("status-list");
+    const services = {};
+
+    ws.onmessage = (event) => {
+      const msg = JSON.parse(event.data);
+      if (msg.event === "status_update") {
+        services[msg.service] = msg.status;
+        render();
+      }
+    };
+
+    function render() {
+      list.innerHTML = "";
+      for (const [service, status] of Object.entries(services)) {
+        const item = document.createElement("li");
+        item.textContent = `${service.toUpperCase()}: ${status}`;
+        item.style.color = status === "online" ? "green" : "red";
+        list.appendChild(item);
+      }
+    }
+  </script>
+</body>
+</html>
