@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebSocket Test</title>
+</head>
+<body>
+  <h2>Conectado ao WebSocket!</h2>
+  <input id="msg" placeholder="Digite uma mensagem">
+  <button onclick="sendMessage()">Enviar</button>
+  <ul id="messages"></ul>
+
+  <script>
+    const ws = new WebSocket("ws://192.168.0.60:8765");
+
+    ws.onopen = () => console.log("Conectado!");
+    ws.onmessage = (event) => {
+      const li = document.createElement("li");
+      li.textContent = "Resposta: " + event.data;
+      document.getElementById("messages").appendChild(li);
+    };
+
+    function sendMessage() {
+      const input = document.getElementById("msg");
+      const jsonMsg = {
+        type: "rest",
+        endpoint: "/exemplo",
+        payload: { nome: input.value }
+      };
+      ws.send(JSON.stringify(jsonMsg));
+      input.value = "";
+    }
+  </script>
+</body>
+</html>
