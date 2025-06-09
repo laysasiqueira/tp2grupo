@@ -5,7 +5,7 @@ from router import route_message
 
 connected_clients = set()
 
-async def handler(websocket, path):
+async def handler(websocket, _path):
     print("Novo cliente:", websocket.remote_address)
     connected_clients.add(websocket)
     try:
