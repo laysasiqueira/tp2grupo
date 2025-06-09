@@ -2,8 +2,8 @@ import asyncio
 import websockets
 import json
 from router import route_message
-
-connected_clients = set()
+from monitor import check_services
+from notifier import notify_clients, connected_clients
 
 async def handler(websocket):
     print("Novo cliente:", websocket.remote_address)
@@ -20,6 +20,7 @@ async def handler(websocket):
         connected_clients.remove(websocket)
 
 async def main():
+    monitor_task = asyncio.create_task(check_services(notify_clients))
     async with websockets.serve(handler, "0.0.0.0", 8765):
         print("Servidor WebSocket rodando na porta 8765...")
         await asyncio.Future()
