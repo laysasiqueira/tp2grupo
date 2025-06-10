@@ -1,0 +1,5 @@
+spyne
+lxml
+xmltodict
+requests
+pymongo

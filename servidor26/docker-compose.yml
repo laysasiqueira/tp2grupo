@@ -1,0 +1,58 @@
+services:
+  soap:
+    build:
+      context: .
+      dockerfile: soap/Dockerfile
+    container_name: soap
+    depends_on:
+      - graphql
+      - grpc
+    ports:
+      - "8010:8010"
+    environment:
+      - AUTH_URL=http://192.168.246.62:6000
+      - MESSAGING_URL=http://192.168.246.62:8000/mensagem
+      - MONGO_URL=mongodb://192.168.246.62:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=meu_usuario
+      - RABBITMQ_PASS=minha_senha
+      - JWT_SECRET=minha_chave_secreta
+
+  graphql:
+    build:
+      context: .
+      dockerfile: graphql/Dockerfile
+    container_name: graphql
+    depends_on:
+      - grpc
+    ports:
+      - "5000:5000"
+    environment:
+      - AUTH_URL=http://192.168.246.62:6000
+      - MESSAGING_URL=http://192.168.246.62:8000/mensagem
+      - MONGO_URL=mongodb://192.168.246.62:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=meu_usuario
+      - RABBITMQ_PASS=minha_senha
+      - JWT_SECRET=minha_chave_secreta
+
+  grpc:
+    build:
+      context: .
+      dockerfile: grpc/Dockerfile
+    container_name: grpc
+    ports:
+      - "50051:50051"
+    environment:
+      - AUTH_URL=http://192.168.246.62:6000
+      - MESSAGING_URL=http://192.168.246.62:8000/mensagem
+      - MONGO_URL=mongodb://192.168.246.62:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=meu_usuario
+      - RABBITMQ_PASS=minha_senha
+      - JWT_SECRET=minha_chave_secreta
+
+networks:
+  default:
+    external: true
+    name: agenda-net

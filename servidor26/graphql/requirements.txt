@@ -1,0 +1,6 @@
+Flask
+flask-graphql
+graphene
+Flask-Cors
+requests
+pymongo
