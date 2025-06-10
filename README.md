@@ -15,7 +15,7 @@ Este projeto demonstra a integração de múltiplos serviços web utilizando div
 O projeto está distribuído em três servidores, cada um com responsabilidades específicas:
 
 *   **192.168.246.26 (Guilherme):** Hospeda os serviços SOAP, GraphQL e gRPC.
-*   **192.168.246.62 (Iris):** Hospeda os serviços REST, de Autenticação (JWT), RabbitMQ e MongoDB.
+*   **192.168.246.62 (Irisnédio):** Hospeda os serviços REST, de Autenticação (JWT), RabbitMQ e MongoDB.
 *   **192.168.246.60 (Laysa):** Hospeda o cliente web (Node.js + Express + Static HTML) e a funcionalidade de WebSocket.
 
 ## Propósito Principal
