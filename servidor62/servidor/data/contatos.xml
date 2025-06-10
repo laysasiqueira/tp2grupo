@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<contatos>
+	<contato>
+		<id>10</id>
+		<nome>Silva</nome>
+		<email>joao.pereira@email.com</email>
+		<telefone>912345678</telefone>
+	</contato>
+	<contato>
+		<id>11</id>
+		<nome>Luis</nome>
+		<email>mariana.lopes@email.com</email>
+		<telefone>913456789</telefone>
+	</contato>
+	<contato>
+		<id>10</id>
+		<nome>Silva</nome>
+		<email>joao.pereira@email.com</email>
+		<telefone>912345678</telefone>
+	</contato>
+	<contato>
+		<id>11</id>
+		<nome>Luis</nome>
+		<email>mariana.lopes@email.com</email>
+		<telefone>913456789</telefone>
+	</contato>
+	<contato>
+		<id>95</id>
+		<nome>Importado XML</nome>
+		<email>xml@email.com</email>
+		<telefone>912222222</telefone>
+	</contato>
+	<contato>
+		<id>95</id>
+		<nome>Importado XML</nome>
+		<email>xml@email.com</email>
+		<telefone>912222222</telefone>
+	</contato>
+	<contato>
+		<nome>Irisnédio</nome>
+		<email>cartumcorreia@gmail.com</email>
+		<telefone>936253415</telefone>
+		<id>96</id>
+	</contato>
+	<contato>
+		<nome>Irisnédio Correia Imbar</nome>
+		<email>cartumcorreia@gmail.com</email>
+		<telefone>920427917</telefone>
+		<id>97</id>
+	</contato>
+</contatos>

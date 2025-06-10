@@ -1,0 +1,79 @@
+services:
+  mongodb:
+    image: mongo:4.4
+    container_name: agenda_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - agenda-net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: agenda_rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: meu_usuario
+      RABBITMQ_DEFAULT_PASS: minha_senha
+      RABBITMQ_DEFAULT_VHOST: '/'
+    networks:
+      - agenda-net
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./servidor/auth/Dockerfile
+    container_name: agenda_auth
+    ports:
+      - "6000:6000"
+    environment:
+      - JWT_SECRET=minha_chave_secreta
+    networks:
+      - agenda-net
+
+  rest:
+    build:
+      context: .
+      dockerfile: ./servidor/rest/Dockerfile
+    container_name: agenda_rest
+    ports:
+      - "5050:5050"
+    depends_on:
+      - mongodb
+      - rabbitmq
+      - auth
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=meu_usuario
+      - RABBITMQ_PASS=minha_senha
+      - AUTH_URL=http://auth:6000
+      - JWT_SECRET=minha_chave_secreta
+    networks:
+      - agenda-net
+
+  messaging:
+    build:
+      context: .
+      dockerfile: servidor/messaging/Dockerfile
+    container_name: agenda_messaging
+    ports:
+      - "8000:8000"
+    depends_on:
+      - rabbitmq
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_USER=meu_usuario
+      - RABBITMQ_PASS=minha_senha
+    networks:
+      - agenda-net
+
+volumes:
+  mongo_data:
+
+networks:
+  agenda-net:
+    driver: bridge
