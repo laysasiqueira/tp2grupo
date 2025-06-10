@@ -13,25 +13,30 @@ async def route_message(data):
     if token and not verify_jwt(token):
         return {"error": "Token JWT inválido"}
 
+    # Executa chamada conforme o tipo
     if tipo == "rest":
         resposta = rest_service.call_rest(SERVERS["rest"], endpoint, payload)
 
-        # 🚨 Detecta se foi criação de novo usuário
-        if endpoint == "/usuarios" and resposta.get("status") == "criado":
-            await notificar_todos(resposta["dados"])
-
-        return resposta
-
     elif tipo == "graphql":
-        return graphql_service.call_graphql(SERVERS["graphql"], payload)
+        resposta = graphql_service.call_graphql(SERVERS["graphql"], payload)
 
     elif tipo == "soap":
-        return soap_service.call_soap(SERVERS["soap"], payload)
+        resposta = soap_service.call_soap(SERVERS["soap"], payload)
 
     elif tipo == "mq":
-        return rabbitmq_service.publish(SERVERS["mq"], payload)
+        resposta = rabbitmq_service.publish(SERVERS["mq"], payload)
 
     elif tipo == "grpc":
-        return grpc_service.call_grpc(SERVERS["grpc"], payload)
+        resposta = grpc_service.call_grpc(SERVERS["grpc"], payload)
 
-    return {"error": "Tipo de mensagem não suportado"}
+    else:
+        return {"error": "Tipo de mensagem não suportado"}
+
+    # 🔔 Se for um retorno com status de criação, notifica todos
+    if isinstance(resposta, dict) and resposta.get("status") == "criado":
+        await notificar_todos({
+            "origem": tipo,
+            "dados": resposta.get("dados", payload)
+        })
+
+    return resposta

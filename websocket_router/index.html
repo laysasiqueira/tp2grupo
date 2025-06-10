@@ -16,19 +16,32 @@
       console.log("✅ Conectado ao WebSocket");
     };
 
-    ws.onmessage = (event) => {
-      const dados = JSON.parse(event.data);
+    // ws.onmessage = (event) => {
+    //   const dados = JSON.parse(event.data);
 
-      if (dados.evento === "novo_usuario") {
-        const li = document.createElement("li");
-        li.textContent = "Novo usuário: " + JSON.stringify(dados.dados);
-        document.getElementById("messages").appendChild(li);
-      } else {
-        const li = document.createElement("li");
-        li.textContent = "Resposta: " + event.data;
-        document.getElementById("messages").appendChild(li);
-      }
-    };
+    //   if (dados.evento === "novo_usuario") {
+    //     const li = document.createElement("li");
+    //     li.textContent = "Novo usuário: " + JSON.stringify(dados.dados);
+    //     document.getElementById("messages").appendChild(li);
+    //   } else {
+    //     const li = document.createElement("li");
+    //     li.textContent = "Resposta: " + event.data;
+    //     document.getElementById("messages").appendChild(li);
+    //   }
+    // };
+    ws.onmessage = (event) => {
+  const dados = JSON.parse(event.data);
+
+  const li = document.createElement("li");
+
+  if (dados.evento === "novo_usuario") {
+    li.textContent = `🟢 Novo usuário criado via ${dados.origem}: ` + JSON.stringify(dados.dados);
+  } else {
+    li.textContent = "Resposta: " + event.data;
+  }
+
+  document.getElementById("messages").appendChild(li);
+};
 
     function sendMessage() {
       const input = document.getElementById("msg");
