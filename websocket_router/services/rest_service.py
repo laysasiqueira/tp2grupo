@@ -1,25 +1,25 @@
-import aiohttp
-from notificador import notificar_todos
+from notificador import notificar_todos  # adicione isso
 
-async def call_rest(base_url, endpoint, payload):
-    url = base_url + endpoint
-    async with aiohttp.ClientSession() as session:
-        async with session.post(url, json=payload) as res:
-            data = await res.json()
+def call_rest(url, endpoint, payload):
+    import requests
 
-            # Supondo que a adição de utilizador é reconhecida por um campo no payload
-            nome = payload.get("nome", "desconhecido")
-            if "add" in endpoint or "create" in endpoint or "register" in endpoint:
-                await notify_clients({
-                    "event": "user_added",
-                    "service": "rest",
-                    "message": f'REST: utilizador adicionado: "{nome}"'
-                })
-            elif "delete" in endpoint or "remove" in endpoint:
-                await notify_clients({
-                    "event": "user_removed",
-                    "service": "rest",
-                    "message": f'REST: utilizador removido: "{nome}"'
-                })
+    full_url = url + endpoint
+    response = requests.post(full_url, json=payload)
 
-            return data
+    try:
+        data = response.json()
+    except:
+        data = {}
+
+    # 👇 verifica se foi criação e notifica via WebSocket
+    if response.status_code == 201:
+        import asyncio
+        asyncio.create_task(notificar_todos({
+            "origem": "rest",
+            "dados": data or payload
+        }))
+
+    return {
+        "status": "criado" if response.status_code == 201 else "erro",
+        "dados": data
+    }
