@@ -1,5 +1,5 @@
 import aiohttp
-from notificador import notify_clients
+from notificador import notificar_todos
 
 async def call_rest(base_url, endpoint, payload):
     url = base_url + endpoint
