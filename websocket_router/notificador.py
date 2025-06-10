@@ -2,6 +2,8 @@ connected_clients = set()
 
 async def notificar_todos(payload):
     import asyncio, json
+    print("🔔 Notificando navegadores via WebSocket:", payload)  # ADICIONE ISSO
+
     if connected_clients:
         mensagem = json.dumps({
             "evento": "novo_usuario",
