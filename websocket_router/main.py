@@ -5,7 +5,7 @@ import json
 from notificador import connected_clients
 
 
-connected_clients = set()
+#connected_clients = set()
 
 #async def handler(websocket):
 #    print("Novo cliente:", websocket.remote_address)
