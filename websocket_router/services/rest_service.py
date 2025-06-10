@@ -21,5 +21,6 @@ def call_rest(url, endpoint, payload):
 
     return {
         "status": "criado" if response.status_code == 201 else "erro",
-        "dados": data
+
+      
     }
