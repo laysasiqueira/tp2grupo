@@ -1,5 +1,5 @@
 import aiohttp
-from websocket_router.notifier import notify_clients
+from notificador import notify_clients
 
 async def call_rest(base_url, endpoint, payload):
     url = base_url + endpoint
