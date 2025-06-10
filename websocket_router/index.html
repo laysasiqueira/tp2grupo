@@ -9,7 +9,7 @@
   <button onclick="sendMessage()">Enviar</button>
   <ul id="messages"></ul>
 
-  <script>
+  <!-- <script>
     const ws = new WebSocket("ws://192.168.246.60:8765");
 
     ws.onopen = () => console.log("Conectado!");
@@ -29,6 +29,24 @@
       ws.send(JSON.stringify(jsonMsg));
       input.value = "";
     }
+  </script> -->
+  <script>
+    const ws = new WebSocket("ws://192.168.0.60:8765");
+  
+    ws.onmessage = (event) => {
+      const dados = JSON.parse(event.data);
+  
+      if (dados.evento === "novo_usuario") {
+        const li = document.createElement("li");
+        li.textContent = "Novo usuário: " + JSON.stringify(dados.dados);
+        document.getElementById("messages").appendChild(li);
+      } else {
+        const li = document.createElement("li");
+        li.textContent = "Resposta: " + event.data;
+        document.getElementById("messages").appendChild(li);
+      }
+    };
   </script>
+  
 </body>
 </html>
