@@ -5,7 +5,7 @@ from router import route_message
 from notificador import connected_clients
 
 # FUNÇÃO OBRIGATÓRIA
-async def handler(websocket, path):
+async def handler(websocket):
     print("Novo cliente:", websocket.remote_address)
     connected_clients.add(websocket)
     try:
